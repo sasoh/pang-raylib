@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.10)
+project(WindowTest)
+find_package(raylib REQUIRED)
+add_executable(${PROJECT_NAME} main.c)
+target_link_libraries(${PROJECT_NAME} raylib)
+
+if (APPLE)
+    target_link_libraries(${PROJECT_NAME} "-framework IOKit")
+    target_link_libraries(${PROJECT_NAME} "-framework Cocoa")
+    target_link_libraries(${PROJECT_NAME} "-framework OpenGL")
+endif()
