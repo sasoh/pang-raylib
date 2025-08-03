@@ -19,16 +19,12 @@ Map* map_create(int rows, int columns) {
     m->rows = rows;
     m->columns = columns;
     m->tiles = malloc(rows * columns * sizeof(int));
-    
+
     return m;
 }
 
-bool map_texture_loaded(Texture2D texture) {
-    return texture.width > 0;
-}
-
 Texture2D map_texture(Map* m, int index) {
-    Texture2D result = { .width = 0 };
+    Texture2D result = { 0 };
 
     if (index == 2) {
         result = m->textures[0];
@@ -40,21 +36,21 @@ Texture2D map_texture(Map* m, int index) {
     return result;
 }
 
-void map_draw(Map *m) {
+void map_draw(Map* m) {
     for (size_t y = 0; y < m->rows; y++) {
         for (size_t x = 0; x < m->columns; x++) {
-            int current_tile =  map_tile(m, x, y);
+            int current_tile = map_tile(m, x, y);
             Texture2D tile_texture = map_texture(m, current_tile);
-            if (map_texture_loaded(tile_texture)) {
+            if (IsTextureValid(tile_texture)) {
                 DrawTexture(
-                    tile_texture, 
-                    x * TILE_PIXEL_SIZE, 
-                    y * TILE_PIXEL_SIZE, 
+                    tile_texture,
+                    x * TILE_PIXEL_SIZE,
+                    y * TILE_PIXEL_SIZE,
                     WHITE
                 );
             }
         }
-    }   
+    }
 }
 
 int map_tile(Map* m, int x, int y) {
@@ -86,8 +82,8 @@ int char_to_int(char c) {
     return (int)(c - '0');
 }
 
-Map *map_load(void) {
-    Map *m = NULL;
+Map* map_load(void) {
+    Map* m = NULL;
     FILE* map_csv = fopen(LEVEL_PATH, "r");
     if (map_csv != NULL) {
         char line_buffer[MAP_ROW_MAX_WIDTH];
@@ -127,7 +123,7 @@ Map *map_load(void) {
         map_print(m);
     }
     else {
-        printf("Failed to open map for parsing.\n");
+        printf("Failed to open %s for parsing.\n", LEVEL_PATH);
     }
 
     return m;

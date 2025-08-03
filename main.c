@@ -1,32 +1,30 @@
 #include "map.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define SCREEN_WIDTH 1400
 #define SCREEN_HEIGHT 840
 #define TARGET_FPS 100
+#define BACKGROUND_COLOR CLITERAL(Color){ 210, 230, 255, 255 }
 
 int main() {
-    Map* current_map = NULL;
-    Color background_color = {
-        .r = 210,
-        .g = 230,
-        .b = 255,
-        .a = 255
-    };
-
-    Vector2 endPoint = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pang!");
     SetTargetFPS(TARGET_FPS);
-    while(!WindowShouldClose()) {
-        if (!current_map) {
-            current_map = map_load();
-        }
+
+    Map* current_map = map_load();
+    if (current_map == NULL) {
+        printf("Failed to load map, quitting.\n");
+        return EXIT_FAILURE;
+    }
+
+    while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(background_color);
+        ClearBackground(BACKGROUND_COLOR);
         map_draw(current_map);
         EndDrawing();
     }
     CloseWindow();
     map_destroy(current_map);
-    return 0;
+
+    return EXIT_SUCCESS;
 }
