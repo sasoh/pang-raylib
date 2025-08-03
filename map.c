@@ -7,6 +7,7 @@
 #define LEVEL_PATH "assets/map-loader-level-1.csv"
 #define TILE01_PATH "assets/tile-01.png"
 #define TILE02_PATH "assets/tile-02.png"
+#define TILE_PIXEL_SIZE 70
 #define MAP_ROW_MAX_WIDTH 100
 
 Map* map_create(int rows, int columns) {
@@ -20,6 +21,44 @@ Map* map_create(int rows, int columns) {
     m->tiles = malloc(rows * columns * sizeof(int));
     
     return m;
+}
+
+bool map_texture_loaded(Texture2D texture) {
+    return texture.width > 0;
+}
+
+Texture2D map_texture(Map* m, int index) {
+    Texture2D result = { .width = 0 };
+
+    if (index == 2) {
+        result = m->textures[0];
+    }
+    else if (index == 3) {
+        result = m->textures[1];
+    }
+
+    return result;
+}
+
+void map_draw(Map *m) {
+    for (size_t y = 0; y < m->rows; y++) {
+        for (size_t x = 0; x < m->columns; x++) {
+            int current_tile =  map_tile(m, x, y);
+            Texture2D tile_texture = map_texture(m, current_tile);
+            if (map_texture_loaded(tile_texture)) {
+                DrawTexture(
+                    tile_texture, 
+                    x * TILE_PIXEL_SIZE, 
+                    y * TILE_PIXEL_SIZE, 
+                    WHITE
+                );
+            }
+        }
+    }   
+}
+
+int map_tile(Map* m, int x, int y) {
+    return m->tiles[x + y * m->columns];
 }
 
 void map_destroy(Map* m) {
@@ -37,7 +76,7 @@ void map_print(Map* m) {
     printf("Map size: %dx%d\n", m->columns, m->rows);
     for (size_t i = 0; i < m->rows; i++) {
         for (size_t j = 0; j < m->columns; j++) {
-            printf("%d ", m->tiles[i * m->columns + j]);
+            printf("%d ", map_tile(m, j, i));
         }
         printf("\n");
     }
@@ -84,6 +123,8 @@ Map *map_load(void) {
 
         m->textures[0] = LoadTexture(TILE01_PATH);
         m->textures[1] = LoadTexture(TILE02_PATH);
+
+        map_print(m);
     }
     else {
         printf("Failed to open map for parsing.\n");

@@ -1,6 +1,4 @@
-#ifndef MAP_H
-#define MAP_H
-
+#pragma once
 #include <raylib.h>
 
 typedef struct {
@@ -11,6 +9,6 @@ typedef struct {
 } Map;
 
 Map *map_load(void);
+void map_draw(Map *m);
 void map_destroy(Map *m);
-
-#endif
+int map_tile(Map *m, int x, int y);
