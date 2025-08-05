@@ -1,8 +1,10 @@
 #include "map.h"
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #define LEVEL_PATH "assets/map-loader-level-1.csv"
 #define TILE01_PATH "assets/tile-01.png"
@@ -10,17 +12,10 @@
 #define TILE_PIXEL_SIZE 70
 #define MAP_ROW_MAX_WIDTH 100
 
-Map* map_create(int rows, int columns) {
-    Map* m = (Map*)malloc(sizeof(Map));
-    if (m == NULL) {
-        printf("Failed to allocate map.\n");
-        return NULL;
-    }
+void map_create(Map* m, int rows, int columns) {
     m->rows = rows;
     m->columns = columns;
     m->tiles = malloc(rows * columns * sizeof(int));
-
-    return m;
 }
 
 Texture2D map_texture(Map* m, int index) {
@@ -36,10 +31,14 @@ Texture2D map_texture(Map* m, int index) {
     return result;
 }
 
+int map_index(int x, int y, int columns) {
+    return x + y * columns;
+}
+
 void map_draw(Map* m) {
-    for (size_t y = 0; y < m->rows; y++) {
-        for (size_t x = 0; x < m->columns; x++) {
-            int current_tile = map_tile(m, x, y);
+    for (int y = 0; y < m->rows; y++) {
+        for (int x = 0; x < m->columns; x++) {
+            int current_tile = m->tiles[map_index(x, y, m->columns)];
             Texture2D tile_texture = map_texture(m, current_tile);
             if (IsTextureValid(tile_texture)) {
                 DrawTexture(
@@ -53,10 +52,6 @@ void map_draw(Map* m) {
     }
 }
 
-int map_tile(Map* m, int x, int y) {
-    return m->tiles[x + y * m->columns];
-}
-
 void map_destroy(Map* m) {
     if (m == NULL) return;
     if (m->tiles != NULL) {
@@ -64,15 +59,14 @@ void map_destroy(Map* m) {
     }
     UnloadTexture(m->textures[0]);
     UnloadTexture(m->textures[1]);
-    free(m);
 }
 
 void map_print(Map* m) {
     if (m == NULL || m->tiles == NULL) return;
     printf("Map size: %dx%d\n", m->columns, m->rows);
-    for (size_t i = 0; i < m->rows; i++) {
-        for (size_t j = 0; j < m->columns; j++) {
-            printf("%d ", map_tile(m, j, i));
+    for (int y = 0; y < m->rows; y++) {
+        for (int x = 0; x < m->columns; x++) {
+            printf("%d ", m->tiles[map_index(x, y, m->columns)]);
         }
         printf("\n");
     }
@@ -82,18 +76,17 @@ int char_to_int(char c) {
     return (int)(c - '0');
 }
 
-Map* map_load(void) {
-    Map* m = NULL;
+int map_load(Map* m) {
     FILE* map_csv = fopen(LEVEL_PATH, "r");
     if (map_csv != NULL) {
         char line_buffer[MAP_ROW_MAX_WIDTH];
         int line_counter = 0;
-        size_t rows = 0;
-        size_t columns = 0;
+        int rows = 0;
+        int columns = 0;
         while (fgets(line_buffer, MAP_ROW_MAX_WIDTH, map_csv) != 0) {
             line_counter++;
             if (columns == 0) {
-                for (size_t i = 0; i < strlen(line_buffer); i++) {
+                for (int i = 0; i < strlen(line_buffer); i++) {
                     if (isdigit(line_buffer[i])) {
                         columns++;
                     }
@@ -102,16 +95,16 @@ Map* map_load(void) {
         }
         rows = line_counter;
 
-        m = map_create(rows, columns);
+        map_create(m, rows, columns);
         rewind(map_csv);
-        for (size_t i = 0; i < m->rows; i++) {
+        for (int y = 0; y < m->rows; y++) {
             fgets(line_buffer, MAP_ROW_MAX_WIDTH, map_csv);
-            size_t column_counter = 0;
-            for (size_t j = 0; j < strlen(line_buffer); j++) {
+            int x = 0;
+            for (int j = 0; j < strlen(line_buffer); j++) {
                 char c = line_buffer[j];
                 if (isdigit(c)) {
-                    m->tiles[i * m->columns + column_counter] = char_to_int(c);
-                    column_counter++;
+                    m->tiles[map_index(x, y, m->columns)] = char_to_int(c);
+                    x++;
                 }
             }
         }
@@ -123,8 +116,8 @@ Map* map_load(void) {
         map_print(m);
     }
     else {
-        printf("Failed to open %s for parsing.\n", LEVEL_PATH);
+        return EIO;
     }
 
-    return m;
+    return 0;
 }
