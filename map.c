@@ -141,9 +141,9 @@ bool map_is_colliding_horizontal(Map* m, Vector2 position, float width) {
     return tile_left > 1 || tile_right > 1;
 }
 
-bool map_is_colliding_vertical(Map* m, Vector2 position, float height) {
+bool map_is_colliding_vertical(Map* m, Vector2 position, float width, float height) {
     int index_below = map_index(
-        floor(((position.x) / (m->columns * m->tile_size)) * m->columns),
+        floor(((position.x + width / 2) / (m->columns * m->tile_size)) * m->columns),
         floor(((position.y + height) / (m->rows * m->tile_size)) * m->rows),
         m->columns
     );

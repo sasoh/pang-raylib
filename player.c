@@ -4,7 +4,7 @@
 #include <raymath.h>
 
 int player_init(Player* p) {
-    p->position = (Vector2) { .x = 120, .y = 650 };
+    p->position = (Vector2) { .x = 120, .y = 150 };
     p->velocity = Vector2Zero();
 
     p->texture = LoadTexture(PLAYER_TEXTURE_PATH);

@@ -28,7 +28,7 @@ void game_collision_check(Game* g, float dt) {
     if (map_is_colliding_horizontal(&g->map, next_player_position, g->player.width)) {
         g->player.velocity.x = 0;
     }
-    if (map_is_colliding_vertical(&g->map, next_player_position, g->player.height)) {
+    if (map_is_colliding_vertical(&g->map, next_player_position, g->player.width, g->player.height)) {
         g->player.velocity.y = 0;
     }
 }
