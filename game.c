@@ -18,12 +18,12 @@ int game_init(Game* g) {
     return 0;
 }
 
-void game_draw(Game* g) {
+static void game_draw(Game* g) {
     map_draw(&g->map);
     player_draw(&g->player);
 }
 
-void game_collision_check(Game* g, float dt) {
+static void game_collision_check(Game* g, float dt) {
     Vector2 next_player_position = Vector2Add(g->player.position, Vector2Scale(g->player.velocity, dt));
     if (map_is_colliding_horizontal(&g->map, next_player_position, g->player.width)) {
         g->player.velocity.x = 0;

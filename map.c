@@ -12,13 +12,13 @@
 #define TILE02_PATH "assets/tile-02.png"
 #define MAP_ROW_MAX_WIDTH 100
 
-void map_create(Map* m, int rows, int columns) {
+static void map_create(Map* m, int rows, int columns) {
     m->rows = rows;
     m->columns = columns;
     m->tiles = malloc(rows * columns * sizeof(int));
 }
 
-Texture2D map_texture(Map* m, int index) {
+static Texture2D map_texture(Map* m, int index) {
     Texture2D result = { 0 };
 
     if (index == 2) {
@@ -31,7 +31,7 @@ Texture2D map_texture(Map* m, int index) {
     return result;
 }
 
-int map_index(int x, int y, int columns) {
+static int map_index(int x, int y, int columns) {
     return x + y * columns;
 }
 
@@ -61,7 +61,7 @@ void map_destroy(Map* m) {
     UnloadTexture(m->textures[1]);
 }
 
-void map_print(Map* m) {
+static void map_print(Map* m) {
     if (m == NULL || m->tiles == NULL) return;
     printf("Map size: %dx%d\n", m->columns, m->rows);
     for (int y = 0; y < m->rows; y++) {
@@ -72,7 +72,7 @@ void map_print(Map* m) {
     }
 }
 
-int char_to_int(char c) {
+static int char_to_int(char c) {
     return (int)(c - '0');
 }
 
@@ -113,7 +113,7 @@ int map_init(Map* m) {
         m->textures[0] = LoadTexture(TILE01_PATH);
         m->textures[1] = LoadTexture(TILE02_PATH);
 
-        m->tile_size = 70;
+        m->tile_size = m->textures[0].width;
 
         map_print(m);
     }
