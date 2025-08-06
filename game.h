@@ -1,4 +1,12 @@
 #pragma once
-int game_init(void);
-int game_loop(void);
-void game_destroy(void);
+#include "map.h"
+#include "player.h"
+
+typedef struct {
+    Map map;
+    Player player;
+} Game;
+
+int game_init(Game* g);
+int game_loop(Game* g);
+void game_destroy(Game* g);

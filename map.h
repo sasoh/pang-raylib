@@ -8,7 +8,6 @@ typedef struct {
     Texture2D textures[2];
 } Map;
 
-int map_load(Map* m);
+int map_init(Map* m);
 void map_draw(Map* m);
 void map_destroy(Map* m);
-int map_tile(Map* m, int x, int y);

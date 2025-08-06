@@ -1,8 +1,8 @@
 #include "game.h"
+#include <errno.h>
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 
 #define SCREEN_WIDTH 1400
 #define SCREEN_HEIGHT 840
@@ -13,16 +13,18 @@ int main() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pang!");
     SetTargetFPS(TARGET_FPS);
 
-    int init = game_init();
-    if (init == ENODATA) {
-        printf("Failed to init game, quitting.\n");
+    Game g;
+    int init_status = game_init(&g);
+    if (init_status == ENODATA) {
+        printf("Failed to load game resources, quitting.\n");
+        return EXIT_FAILURE;
     }
 
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BACKGROUND_COLOR);
 
-        int loop_status = game_loop();
+        int loop_status = game_loop(&g);
         if (loop_status != 0) {
             break;
         }
@@ -31,7 +33,7 @@ int main() {
     }
     CloseWindow();
 
-    game_destroy();
+    game_destroy(&g);
 
     return EXIT_SUCCESS;
 }

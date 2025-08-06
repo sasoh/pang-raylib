@@ -1,10 +1,10 @@
 #include "map.h"
 #include <ctype.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 #define LEVEL_PATH "assets/map-loader-level-1.csv"
 #define TILE01_PATH "assets/tile-01.png"
@@ -76,7 +76,7 @@ int char_to_int(char c) {
     return (int)(c - '0');
 }
 
-int map_load(Map* m) {
+int map_init(Map* m) {
     FILE* map_csv = fopen(LEVEL_PATH, "r");
     if (map_csv != NULL) {
         char line_buffer[MAP_ROW_MAX_WIDTH];
