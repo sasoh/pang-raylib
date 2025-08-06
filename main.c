@@ -3,10 +3,11 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "input.h"
 
 #define SCREEN_WIDTH 1400
 #define SCREEN_HEIGHT 840
-#define TARGET_FPS 60
+#define TARGET_FPS 100
 #define BACKGROUND_COLOR CLITERAL(Color){ 210, 230, 255, 255 }
 
 int main() {
@@ -19,12 +20,12 @@ int main() {
         printf("Failed to load game resources, quitting.\n");
         return EXIT_FAILURE;
     }
-
+    
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BACKGROUND_COLOR);
 
-        int loop_status = game_loop(&g);
+        int loop_status = game_loop(&g, input_state(), GetFrameTime());
         if (loop_status != 0) {
             break;
         }

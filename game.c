@@ -17,14 +17,27 @@ int game_init(Game* g) {
     return 0;
 }
 
-int game_loop(Game* g) {
+void game_update_input(Game* g, Input i) {
+    player_update_input(&g->player, i);
+}
+
+void game_update_movement(Game* g, float dt) {
+    player_update_movement(&g->player, dt);
+}
+
+void game_draw(Game* g) {
     map_draw(&g->map);
     player_draw(&g->player);
+}
+
+int game_loop(Game* g, Input i, float dt) {
+    game_update_input(g, i);
+    game_update_movement(g, dt);
+    game_draw(g);
     return 0;
 }
 
 void game_destroy(Game* g) {
-    if (g == NULL) return;
     map_destroy(&g->map);
     player_destroy(&g->player);
 }

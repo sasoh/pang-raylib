@@ -1,4 +1,5 @@
 #pragma once
+#include "input.h"
 #include "map.h"
 #include "player.h"
 
@@ -8,5 +9,5 @@ typedef struct {
 } Game;
 
 int game_init(Game* g);
-int game_loop(Game* g);
+int game_loop(Game* g, Input i, float dt);
 void game_destroy(Game* g);
