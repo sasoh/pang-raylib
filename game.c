@@ -25,13 +25,16 @@ void game_draw(Game* g) {
 
 void game_collision_check(Game* g, float dt) {
     Vector2 next_player_position = Vector2Add(g->player.position, Vector2Scale(g->player.velocity, dt));
-    if (map_is_colliding_horizontal(&g->map, next_player_position, g->player.size)) {
+    if (map_is_colliding_horizontal(&g->map, next_player_position, g->player.width)) {
         g->player.velocity.x = 0;
+    }
+    if (map_is_colliding_vertical(&g->map, next_player_position, g->player.height)) {
+        g->player.velocity.y = 0;
     }
 }
 
 int game_loop(Game* g, Input i, float dt) {
-    player_update_input(&g->player, i);
+    player_update_input(&g->player, i, GRAVITY_VELOCITY);
     game_collision_check(g, dt);
     player_update_movement(&g->player, dt);
     game_draw(g);

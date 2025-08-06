@@ -4,7 +4,7 @@
 #include <raymath.h>
 
 int player_init(Player* p) {
-    p->position = (Vector2) { .x = 150, .y = 100 };
+    p->position = (Vector2) { .x = 120, .y = 650 };
     p->velocity = Vector2Zero();
 
     p->texture = LoadTexture(PLAYER_TEXTURE_PATH);
@@ -12,12 +12,13 @@ int player_init(Player* p) {
         return EIO;
     }
 
-    p->size = 60;
+    p->width = p->texture.width;
+    p->height = p->texture.height;
 
     return 0;
 }
 
-void player_update_input(Player* p, Input i) {
+void player_update_input(Player* p, Input i, float gravity_velocity) {
     Vector2 targetVelocity = Vector2Zero();
     if (i.isLeftPressed) {
         targetVelocity.x += -PLAYER_HORIZOTNAL_SPEED;
@@ -25,6 +26,7 @@ void player_update_input(Player* p, Input i) {
     if (i.isRightPressed) {
         targetVelocity.x += PLAYER_HORIZOTNAL_SPEED;
     }
+    targetVelocity.y = p->velocity.y + gravity_velocity;
     p->velocity = targetVelocity;
 }
 

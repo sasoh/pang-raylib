@@ -9,11 +9,12 @@ typedef struct {
     Vector2 position;
     Vector2 velocity;
     Texture2D texture;
-    float size;
+    float width;
+    float height;
 } Player;
 
 int player_init(Player* p);
-void player_update_input(Player* p, Input i);
+void player_update_input(Player* p, Input i, float gravity_velocity);
 void player_update_movement(Player* p, float dt);
 void player_draw(Player* p);
 void player_destroy(Player* p);

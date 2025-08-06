@@ -3,6 +3,8 @@
 #include "map.h"
 #include "player.h"
 
+#define GRAVITY_VELOCITY 30
+
 typedef struct {
     Map map;
     Player player;

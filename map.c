@@ -10,7 +10,6 @@
 #define LEVEL_PATH "assets/map-loader-level-1.csv"
 #define TILE01_PATH "assets/tile-01.png"
 #define TILE02_PATH "assets/tile-02.png"
-#define TILE_PIXEL_SIZE 70
 #define MAP_ROW_MAX_WIDTH 100
 
 void map_create(Map* m, int rows, int columns) {
@@ -44,8 +43,8 @@ void map_draw(Map* m) {
             if (IsTextureValid(tile_texture)) {
                 DrawTexture(
                     tile_texture,
-                    x * TILE_PIXEL_SIZE,
-                    y * TILE_PIXEL_SIZE,
+                    x * tile_texture.width,
+                    y * tile_texture.height,
                     WHITE
                 );
             }
@@ -125,19 +124,30 @@ int map_init(Map* m) {
     return 0;
 }
 
-bool map_is_colliding_horizontal(Map* m, Vector2 position, float size) {
+bool map_is_colliding_horizontal(Map* m, Vector2 position, float width) {
     int index_left = map_index(
         floor((position.x / (m->columns * m->tile_size)) * m->columns),
         floor((position.y / (m->rows * m->tile_size)) * m->rows),
         m->columns
     );
     int index_right = map_index(
-        floor(((position.x + size) / (m->columns * m->tile_size)) * m->columns),
-        floor(((position.y + size) / (m->rows * m->tile_size)) * m->rows),
+        floor(((position.x + width) / (m->columns * m->tile_size)) * m->columns),
+        floor(((position.y + width) / (m->rows * m->tile_size)) * m->rows),
         m->columns
     );
     int tile_left = m->tiles[index_left];
     int tile_right = m->tiles[index_right];
 
     return tile_left > 1 || tile_right > 1;
+}
+
+bool map_is_colliding_vertical(Map* m, Vector2 position, float height) {
+    int index_below = map_index(
+        floor(((position.x) / (m->columns * m->tile_size)) * m->columns),
+        floor(((position.y + height) / (m->rows * m->tile_size)) * m->rows),
+        m->columns
+    );
+    int tile_below = m->tiles[index_below];
+
+    return tile_below > 1;
 }
