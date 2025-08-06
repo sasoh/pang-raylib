@@ -2,10 +2,14 @@
 #include "input.h"
 #include <raylib.h>
 
+#define PLAYER_TEXTURE_PATH "assets/player-idle-01.png"
+#define PLAYER_HORIZOTNAL_SPEED 550
+
 typedef struct {
     Vector2 position;
     Vector2 velocity;
     Texture2D texture;
+    float size;
 } Player;
 
 int player_init(Player* p);

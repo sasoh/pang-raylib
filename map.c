@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define LEVEL_PATH "assets/map-loader-level-1.csv"
 #define TILE01_PATH "assets/tile-01.png"
@@ -113,6 +114,8 @@ int map_init(Map* m) {
         m->textures[0] = LoadTexture(TILE01_PATH);
         m->textures[1] = LoadTexture(TILE02_PATH);
 
+        m->tile_size = 70;
+
         map_print(m);
     }
     else {
@@ -120,4 +123,21 @@ int map_init(Map* m) {
     }
 
     return 0;
+}
+
+bool map_is_colliding_horizontal(Map* m, Vector2 position, float size) {
+    int index_left = map_index(
+        floor((position.x / (m->columns * m->tile_size)) * m->columns),
+        floor((position.y / (m->rows * m->tile_size)) * m->rows),
+        m->columns
+    );
+    int index_right = map_index(
+        floor(((position.x + size) / (m->columns * m->tile_size)) * m->columns),
+        floor(((position.y + size) / (m->rows * m->tile_size)) * m->rows),
+        m->columns
+    );
+    int tile_left = m->tiles[index_left];
+    int tile_right = m->tiles[index_right];
+
+    return tile_left > 1 || tile_right > 1;
 }

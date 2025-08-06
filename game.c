@@ -2,6 +2,7 @@
 #include "map.h"
 #include "player.h"
 #include <errno.h>
+#include <raymath.h>
 
 int game_init(Game* g) {
     int map_load_status = map_init(&g->map);
@@ -17,22 +18,22 @@ int game_init(Game* g) {
     return 0;
 }
 
-void game_update_input(Game* g, Input i) {
-    player_update_input(&g->player, i);
-}
-
-void game_update_movement(Game* g, float dt) {
-    player_update_movement(&g->player, dt);
-}
-
 void game_draw(Game* g) {
     map_draw(&g->map);
     player_draw(&g->player);
 }
 
+void game_collision_check(Game* g, float dt) {
+    Vector2 next_player_position = Vector2Add(g->player.position, Vector2Scale(g->player.velocity, dt));
+    if (map_is_colliding_horizontal(&g->map, next_player_position, g->player.size)) {
+        g->player.velocity.x = 0;
+    }
+}
+
 int game_loop(Game* g, Input i, float dt) {
-    game_update_input(g, i);
-    game_update_movement(g, dt);
+    player_update_input(&g->player, i);
+    game_collision_check(g, dt);
+    player_update_movement(&g->player, dt);
     game_draw(g);
     return 0;
 }

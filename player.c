@@ -3,17 +3,16 @@
 #include <stdio.h>
 #include <raymath.h>
 
-#define PLAYER_TEXTURE_PATH "assets/player-idle-01.png"
-#define PLAYER_HORIZOTNAL_SPEED 250
-
 int player_init(Player* p) {
-    p->position = Vector2Zero();
+    p->position = (Vector2) { .x = 150, .y = 100 };
     p->velocity = Vector2Zero();
 
     p->texture = LoadTexture(PLAYER_TEXTURE_PATH);
     if (!IsTextureValid(p->texture)) {
         return EIO;
     }
+
+    p->size = 60;
 
     return 0;
 }
