@@ -124,15 +124,15 @@ int map_init(Map* m) {
     return 0;
 }
 
-bool map_is_colliding_horizontal(Map* m, Vector2 position, float width) {
+bool map_is_colliding_horizontal(Map* m, Vector2 position, Vector2 dimensions) {
     int index_left = map_index(
         floor((position.x / (m->columns * m->tile_size)) * m->columns),
-        floor((position.y / (m->rows * m->tile_size)) * m->rows),
+        floor(((position.y + dimensions.y / 2) / (m->rows * m->tile_size)) * m->rows),
         m->columns
     );
     int index_right = map_index(
-        floor(((position.x + width) / (m->columns * m->tile_size)) * m->columns),
-        floor(((position.y + width) / (m->rows * m->tile_size)) * m->rows),
+        floor(((position.x + dimensions.x) / (m->columns * m->tile_size)) * m->columns),
+        floor(((position.y + dimensions.y / 2) / (m->rows * m->tile_size)) * m->rows),
         m->columns
     );
     int tile_left = m->tiles[index_left];
@@ -141,10 +141,10 @@ bool map_is_colliding_horizontal(Map* m, Vector2 position, float width) {
     return tile_left > 1 || tile_right > 1;
 }
 
-bool map_is_colliding_vertical(Map* m, Vector2 position, float width, float height) {
+bool map_is_colliding_vertical(Map* m, Vector2 position, Vector2 dimensions) {
     int index_below = map_index(
-        floor(((position.x + width / 2) / (m->columns * m->tile_size)) * m->columns),
-        floor(((position.y + height) / (m->rows * m->tile_size)) * m->rows),
+        floor(((position.x + dimensions.x / 2) / (m->columns * m->tile_size)) * m->columns),
+        floor(((position.y + dimensions.y) / (m->rows * m->tile_size)) * m->rows),
         m->columns
     );
     int tile_below = m->tiles[index_below];

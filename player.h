@@ -9,8 +9,7 @@ typedef struct {
     Vector2 position;
     Vector2 velocity;
     Texture2D texture;
-    float width;
-    float height;
+    Vector2 dimensions;
 } Player;
 
 int player_init(Player* p);

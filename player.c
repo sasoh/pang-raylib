@@ -4,7 +4,7 @@
 #include <raymath.h>
 
 int player_init(Player* p) {
-    p->position = (Vector2) { .x = 120, .y = 150 };
+    p->position = (Vector2){ .x = 120, .y = 150 };
     p->velocity = Vector2Zero();
 
     p->texture = LoadTexture(PLAYER_TEXTURE_PATH);
@@ -12,8 +12,7 @@ int player_init(Player* p) {
         return EIO;
     }
 
-    p->width = p->texture.width;
-    p->height = p->texture.height;
+    p->dimensions = (Vector2) { .x = p->texture.width, .y = p->texture.height };
 
     return 0;
 }
@@ -40,7 +39,6 @@ void player_draw(Player* p) {
 }
 
 void player_destroy(Player* p) {
-    if (p == NULL) return;
     if (IsTextureValid(p->texture)) {
         UnloadTexture(p->texture);
     }

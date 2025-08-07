@@ -25,10 +25,10 @@ static void game_draw(Game* g) {
 
 static void game_collision_check(Game* g, float dt) {
     Vector2 next_player_position = Vector2Add(g->player.position, Vector2Scale(g->player.velocity, dt));
-    if (map_is_colliding_horizontal(&g->map, next_player_position, g->player.width)) {
+    if (map_is_colliding_horizontal(&g->map, next_player_position, g->player.dimensions)) {
         g->player.velocity.x = 0;
     }
-    if (map_is_colliding_vertical(&g->map, next_player_position, g->player.width, g->player.height)) {
+    if (map_is_colliding_vertical(&g->map, next_player_position, g->player.dimensions)) {
         g->player.velocity.y = 0;
     }
 }
