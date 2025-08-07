@@ -13,7 +13,7 @@ int player_init(Player* p) {
         return EIO;
     }
 
-    p->dimensions = (Vector2) { .x = p->texture.width, .y = p->texture.height };
+    p->dimensions = (Vector2){ .x = p->texture.width, .y = p->texture.height };
 
     return 0;
 }

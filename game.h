@@ -9,7 +9,8 @@
 typedef struct {
     Map map;
     Player player;
-    Balloon balloon;
+    Balloon balloon[3];
+    int balloon_count;
 } Game;
 
 int game_init(Game* g);

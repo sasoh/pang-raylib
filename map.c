@@ -162,7 +162,6 @@ bool map_check_collision(Map* m, Vector2 position) {
         return true;
     }
     int tile = m->tiles[index];
-    //printf("Position %.1fx%.1f coordinate [%d, %d] index %d tile %d\n", position.x, position.y, x, y, index, tile);
-
+    
     return tile != TILE_BLANK;
 }
