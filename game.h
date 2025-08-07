@@ -1,4 +1,5 @@
 #pragma once
+#include "balloon.h"
 #include "input.h"
 #include "map.h"
 #include "player.h"
@@ -8,6 +9,7 @@
 typedef struct {
     Map map;
     Player player;
+    Balloon balloon;
 } Game;
 
 int game_init(Game* g);

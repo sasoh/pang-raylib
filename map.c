@@ -12,6 +12,8 @@
 #define TILE02_PATH "assets/tile-02.png"
 #define MAP_ROW_MAX_WIDTH 100
 
+#define TILE_BLANK 1
+
 static void map_create(Map* m, int rows, int columns) {
     m->rows = rows;
     m->columns = columns;
@@ -53,12 +55,15 @@ void map_draw(Map* m) {
 }
 
 void map_destroy(Map* m) {
-    if (m == NULL) return;
     if (m->tiles != NULL) {
         free(m->tiles);
     }
-    UnloadTexture(m->textures[0]);
-    UnloadTexture(m->textures[1]);
+    if (IsTextureValid(m->textures[0])) {
+        UnloadTexture(m->textures[0]);
+    }
+    if (IsTextureValid(m->textures[1])) {
+        UnloadTexture(m->textures[1]);
+    }
 }
 
 static void map_print(Map* m) {
@@ -70,10 +75,6 @@ static void map_print(Map* m) {
         }
         printf("\n");
     }
-}
-
-static int char_to_int(char c) {
-    return (int)(c - '0');
 }
 
 int map_init(Map* m) {
@@ -103,7 +104,7 @@ int map_init(Map* m) {
             for (int j = 0; j < strlen(line_buffer); j++) {
                 char c = line_buffer[j];
                 if (isdigit(c)) {
-                    m->tiles[map_index(x, y, m->columns)] = char_to_int(c);
+                    m->tiles[map_index(x, y, m->columns)] = atoi(&c);
                     x++;
                 }
             }
@@ -138,7 +139,7 @@ bool map_is_colliding_horizontal(Map* m, Vector2 position, Vector2 dimensions) {
     int tile_left = m->tiles[index_left];
     int tile_right = m->tiles[index_right];
 
-    return tile_left > 1 || tile_right > 1;
+    return tile_left != TILE_BLANK || tile_right != TILE_BLANK;
 }
 
 bool map_is_colliding_vertical(Map* m, Vector2 position, Vector2 dimensions) {
@@ -149,5 +150,19 @@ bool map_is_colliding_vertical(Map* m, Vector2 position, Vector2 dimensions) {
     );
     int tile_below = m->tiles[index_below];
 
-    return tile_below > 1;
+    return tile_below != TILE_BLANK;
+}
+
+bool map_check_collision(Map* m, Vector2 position) {
+    int x = floorf((position.x / (m->columns * m->tile_size)) * m->columns);
+    int y = floorf((position.y / (m->rows * m->tile_size)) * m->rows);
+    int index = map_index(x, y, m->columns);
+    if (index >= m->columns * m->rows) {
+        printf("Queried %.1fx%.1f coordinate [%d, %d] index %d outside of map\n", position.x, position.y, x, y, index);
+        return true;
+    }
+    int tile = m->tiles[index];
+    //printf("Position %.1fx%.1f coordinate [%d, %d] index %d tile %d\n", position.x, position.y, x, y, index, tile);
+
+    return tile != TILE_BLANK;
 }
