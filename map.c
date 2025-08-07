@@ -11,7 +11,6 @@
 #define TILE01_PATH "assets/tile-01.png"
 #define TILE02_PATH "assets/tile-02.png"
 #define MAP_ROW_MAX_WIDTH 100
-
 #define TILE_BLANK 1
 
 static void map_create(Map* m, int rows, int columns) {
@@ -125,34 +124,6 @@ int map_init(Map* m) {
     return 0;
 }
 
-bool map_is_colliding_horizontal(Map* m, Vector2 position, Vector2 dimensions) {
-    int index_left = map_index(
-        floor((position.x / (m->columns * m->tile_size)) * m->columns),
-        floor(((position.y + dimensions.y / 2) / (m->rows * m->tile_size)) * m->rows),
-        m->columns
-    );
-    int index_right = map_index(
-        floor(((position.x + dimensions.x) / (m->columns * m->tile_size)) * m->columns),
-        floor(((position.y + dimensions.y / 2) / (m->rows * m->tile_size)) * m->rows),
-        m->columns
-    );
-    int tile_left = m->tiles[index_left];
-    int tile_right = m->tiles[index_right];
-
-    return tile_left != TILE_BLANK || tile_right != TILE_BLANK;
-}
-
-bool map_is_colliding_vertical(Map* m, Vector2 position, Vector2 dimensions) {
-    int index_below = map_index(
-        floor(((position.x + dimensions.x / 2) / (m->columns * m->tile_size)) * m->columns),
-        floor(((position.y + dimensions.y) / (m->rows * m->tile_size)) * m->rows),
-        m->columns
-    );
-    int tile_below = m->tiles[index_below];
-
-    return tile_below != TILE_BLANK;
-}
-
 bool map_check_collision(Map* m, Vector2 position) {
     int x = floorf((position.x / (m->columns * m->tile_size)) * m->columns);
     int y = floorf((position.y / (m->rows * m->tile_size)) * m->rows);
@@ -162,6 +133,6 @@ bool map_check_collision(Map* m, Vector2 position) {
         return true;
     }
     int tile = m->tiles[index];
-    
+
     return tile != TILE_BLANK;
 }

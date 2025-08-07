@@ -64,7 +64,7 @@ static void game_collision_check(Game* g, float dt) {
     points_count = 0;
 
     for (int i = 0; i < g->balloon_count; i++) {
-        Balloon *b = &g->balloon[i];
+        Balloon* b = &g->balloon[i];
         balloon_horizontal_collision_points(b, &points, &points_count, dt);
         for (int i = 0; i < points_count; i++) {
             if (map_check_collision(&g->map, points[i])) {

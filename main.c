@@ -20,7 +20,7 @@ int main() {
         printf("Failed to load game resources, quitting.\n");
         return EXIT_FAILURE;
     }
-    
+
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BACKGROUND_COLOR);
