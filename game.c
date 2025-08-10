@@ -15,8 +15,7 @@ int game_init(Game* g) {
         return ENODATA;
     }
 
-    g->balloon_count = 3;
-    for (int i = 0; i < g->balloon_count; i++) {
+    for (int i = 0; i < BALLOON_COUNT; i++) {
         int balloon_load_status = balloon_init(
             &g->balloon[i],
             (Vector2){ .x = 220.0f + i * 200, .y = 150.0f },
@@ -31,9 +30,13 @@ int game_init(Game* g) {
     return 0;
 }
 
-static void game_update_velocity(Game* g, Input i, float gravity_velocity) {
-    player_update_velocity(&g->player, i, gravity_velocity);
-    for (int i = 0; i < g->balloon_count; i++) {
+static void game_update_input(Game* g, Input i) {
+    player_update_input(&g->player, i);
+}
+
+static void game_update_velocity(Game* g, float gravity_velocity) {
+    player_update_velocity(&g->player, gravity_velocity);
+    for (int i = 0; i < BALLOON_COUNT; i++) {
         balloon_update_velocity(&g->balloon[i], gravity_velocity);
     }
 }
@@ -63,7 +66,7 @@ static void game_collision_check(Game* g, float dt) {
     points = NULL;
     points_count = 0;
 
-    for (int i = 0; i < g->balloon_count; i++) {
+    for (int i = 0; i < BALLOON_COUNT; i++) {
         Balloon* b = &g->balloon[i];
         balloon_horizontal_collision_points(b, &points, &points_count, dt);
         for (int i = 0; i < points_count; i++) {
@@ -91,7 +94,7 @@ static void game_collision_check(Game* g, float dt) {
 
 static void game_update_movement(Game* g, float dt) {
     player_update_movement(&g->player, dt);
-    for (int i = 0; i < g->balloon_count; i++) {
+    for (int i = 0; i < BALLOON_COUNT; i++) {
         balloon_update_movement(&g->balloon[i], dt);
     }
 }
@@ -99,13 +102,14 @@ static void game_update_movement(Game* g, float dt) {
 static void game_draw(Game* g) {
     map_draw(&g->map);
     player_draw(&g->player);
-    for (int i = 0; i < g->balloon_count; i++) {
+    for (int i = 0; i < BALLOON_COUNT; i++) {
         balloon_draw(&g->balloon[i]);
     }
 }
 
 int game_loop(Game* g, Input i, float dt) {
-    game_update_velocity(g, i, GRAVITY_VELOCITY);
+    game_update_input(g, i);
+    game_update_velocity(g, GRAVITY_VELOCITY);
     game_collision_check(g, dt);
     game_update_movement(g, dt);
     game_draw(g);

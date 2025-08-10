@@ -15,34 +15,58 @@ int player_init(Player* p) {
 
     p->dimensions = (Vector2){ .x = p->texture.width, .y = p->texture.height };
 
+    int weapon_init_status = weapon_init(&p->weapon);
+    if (weapon_init_status != 0) {
+        printf("Failed to initialize weapon!\n");
+    }
+
     return 0;
 }
 
-void player_update_velocity(Player* p, Input i, float gravity_velocity) {
+void player_update_input(Player* p, Input i) {
     Vector2 targetVelocity = Vector2Zero();
-    if (i.isLeftPressed) {
+    if (i.is_left_pressed) {
         targetVelocity.x += -PLAYER_HORIZOTNAL_SPEED;
     }
-    if (i.isRightPressed) {
+    if (i.is_right_pressed) {
         targetVelocity.x += PLAYER_HORIZOTNAL_SPEED;
     }
-    targetVelocity.y = p->velocity.y + gravity_velocity;
+    targetVelocity.y = p->velocity.y;
     p->velocity = targetVelocity;
+
+    if (i.is_shoot_pressed) {
+        if (!p->weapon.is_shot) {
+            weapon_shoot(
+                &p->weapon,
+                (Vector2){
+                    .x = p->position.x + p->dimensions.x / 2,
+                    .y = p->position.y
+                }
+            );
+        }
+    }
+}
+
+void player_update_velocity(Player* p, float gravity_velocity) {
+    p->velocity.y += gravity_velocity;
 }
 
 void player_update_movement(Player* p, float dt) {
     p->position.x += p->velocity.x * dt;
     p->position.y += p->velocity.y * dt;
+    weapon_update_movement(&p->weapon, dt);
 }
 
 void player_draw(Player* p) {
     DrawTexture(p->texture, p->position.x, p->position.y, WHITE);
+    weapon_draw(&p->weapon);
 }
 
 void player_destroy(Player* p) {
     if (IsTextureValid(p->texture)) {
         UnloadTexture(p->texture);
     }
+    weapon_destroy(&p->weapon);
 }
 
 void player_horizontal_collision_points(Player* p, Vector2** points, int* points_count, float dt) {

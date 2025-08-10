@@ -5,12 +5,12 @@
 #include "player.h"
 
 #define GRAVITY_VELOCITY 30
+#define BALLOON_COUNT 3
 
 typedef struct {
     Map map;
     Player player;
-    Balloon balloon[3];
-    int balloon_count;
+    Balloon balloon[BALLOON_COUNT];
 } Game;
 
 int game_init(Game* g);

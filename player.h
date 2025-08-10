@@ -1,5 +1,6 @@
 #pragma once
 #include "input.h"
+#include "weapon.h"
 #include <raylib.h>
 
 #define PLAYER_TEXTURE_PATH "assets/player-idle-01.png"
@@ -10,10 +11,12 @@ typedef struct {
     Vector2 velocity;
     Texture2D texture;
     Vector2 dimensions;
+    Weapon weapon;
 } Player;
 
 int player_init(Player* p);
-void player_update_velocity(Player* p, Input i, float gravity_velocity);
+void player_update_input(Player* p, Input i);
+void player_update_velocity(Player* p, float gravity_velocity);
 void player_update_movement(Player* p, float dt);
 void player_draw(Player* p);
 void player_destroy(Player* p);
