@@ -13,7 +13,7 @@ int player_init(Player* p) {
 
     int weapon_init_status = weapon_init(&p->weapon);
     if (weapon_init_status != 0) {
-        printf("Failed to initialize weapon!\n");
+        return weapon_init_status;
     }
 
     return 0;
