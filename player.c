@@ -5,15 +5,11 @@
 #include <stdlib.h>
 
 int player_init(Player* p) {
-    p->position = (Vector2){ .x = 120, .y = 650 };
-    p->velocity = Vector2Zero();
-
-    p->texture = LoadTexture(PLAYER_TEXTURE_PATH);
-    if (!IsTextureValid(p->texture)) {
-        return EIO;
+    int entity_init_status = entity_init(&p->entity, true, true, PLAYER_TEXTURE_PATH);
+    if (entity_init_status != 0) {
+        return entity_init_status;
     }
-
-    p->dimensions = (Vector2){ .x = p->texture.width, .y = p->texture.height };
+    p->entity.position = (Vector2){ .x = 120, .y = 650 };
 
     int weapon_init_status = weapon_init(&p->weapon);
     if (weapon_init_status != 0) {
@@ -31,42 +27,20 @@ void player_update_input(Player* p, Input i) {
     if (i.is_right_pressed) {
         targetVelocity.x += PLAYER_HORIZOTNAL_SPEED;
     }
-    targetVelocity.y = p->velocity.y;
-    p->velocity = targetVelocity;
+    targetVelocity.y = p->entity.velocity.y;
+    p->entity.velocity = targetVelocity;
 
     if (i.is_shoot_pressed) {
         if (!p->weapon.is_shot) {
             weapon_shoot(
                 &p->weapon,
                 (Vector2){
-                    .x = p->position.x + p->dimensions.x / 2,
-                    .y = p->position.y
+                    .x = p->entity.position.x + p->entity.dimensions.x / 2,
+                    .y = p->entity.position.y
                 }
             );
         }
     }
-}
-
-void player_update_velocity(Player* p, float gravity_velocity) {
-    p->velocity.y += gravity_velocity;
-}
-
-void player_update_movement(Player* p, float dt) {
-    p->position.x += p->velocity.x * dt;
-    p->position.y += p->velocity.y * dt;
-    weapon_update_movement(&p->weapon, dt);
-}
-
-void player_draw(Player* p) {
-    DrawTexture(p->texture, p->position.x, p->position.y, WHITE);
-    weapon_draw(&p->weapon);
-}
-
-void player_destroy(Player* p) {
-    if (IsTextureValid(p->texture)) {
-        UnloadTexture(p->texture);
-    }
-    weapon_destroy(&p->weapon);
 }
 
 void player_horizontal_collision_points(Player* p, Vector2** points, int* points_count, float dt) {
@@ -79,12 +53,12 @@ void player_horizontal_collision_points(Player* p, Vector2** points, int* points
     *points_count = 2;
 
     (*points)[0] = (Vector2){
-        .x = p->position.x + p->velocity.x * dt,
-        .y = p->position.y + p->dimensions.y / 2
+        .x = p->entity.position.x + p->entity.velocity.x * dt,
+        .y = p->entity.position.y + p->entity.dimensions.y / 2
     };
     (*points)[1] = (Vector2){
-        .x = p->position.x + p->dimensions.x + p->velocity.x * dt,
-        .y = p->position.y + p->dimensions.y / 2
+        .x = p->entity.position.x + p->entity.dimensions.x + p->entity.velocity.x * dt,
+        .y = p->entity.position.y + p->entity.dimensions.y / 2
     };
 }
 
@@ -97,12 +71,12 @@ void player_vertical_collision_points(Player* p, Vector2** points, int* points_c
     }
     *points_count = 2;
     (*points)[0] = (Vector2){
-        .x = p->position.x,
-        .y = p->position.y + p->dimensions.y + p->velocity.y * dt
+        .x = p->entity.position.x,
+        .y = p->entity.position.y + p->entity.dimensions.y + p->entity.velocity.y * dt
     };
     (*points)[1] = (Vector2){
-        .x = p->position.x + p->dimensions.x,
-        .y = p->position.y + p->dimensions.y + p->velocity.y * dt
+        .x = p->entity.position.x + p->entity.dimensions.x,
+        .y = p->entity.position.y + p->entity.dimensions.y + p->entity.velocity.y * dt
     };
 }
 

@@ -11,6 +11,8 @@ typedef struct {
     Map map;
     Player player;
     Balloon balloon[BALLOON_COUNT];
+    Entity **running_entities;
+    int running_entities_count;
 } Game;
 
 int game_init(Game* g);

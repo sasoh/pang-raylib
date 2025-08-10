@@ -3,6 +3,7 @@
 #include "player.h"
 #include <errno.h>
 #include <raymath.h>
+#include <stdlib.h>
 
 int game_init(Game* g) {
     int map_load_status = map_init(&g->map);
@@ -27,17 +28,25 @@ int game_init(Game* g) {
         }
     }
 
+    g->running_entities = malloc((2 + BALLOON_COUNT) * sizeof(Entity *));
+    if (g->running_entities == NULL) {
+        return ENOMEM;
+    }
+    
+    int index = 0;
+    (g->running_entities)[index++] = &g->player.entity;
+    for (int i = 0; i < BALLOON_COUNT; i++) {
+        (g->running_entities)[index++] = &g->balloon[i].entity;
+    }
+    (g->running_entities)[index++] = &g->player.weapon.entity;
+    g->running_entities_count = index;
+
     return 0;
 }
 
-static void game_update_input(Game* g, Input i) {
-    player_update_input(&g->player, i);
-}
-
-static void game_update_velocity(Game* g, float gravity_velocity) {
-    player_update_velocity(&g->player, gravity_velocity);
-    for (int i = 0; i < BALLOON_COUNT; i++) {
-        balloon_update_velocity(&g->balloon[i], gravity_velocity);
+static void game_update_gravity(Game* g, float gravity_velocity) {   
+    for (int i = 0; i < g->running_entities_count; i++) {
+        entity_update_gravity(g->running_entities[i], gravity_velocity);
     }
 }
 
@@ -47,7 +56,7 @@ static void game_collision_check(Game* g, float dt) {
     player_horizontal_collision_points(&g->player, &points, &points_count, dt);
     for (int i = 0; i < points_count; i++) {
         if (map_check_collision(&g->map, points[i])) {
-            g->player.velocity.x = 0.0f;
+            g->player.entity.velocity.x = 0.0f;
             break;
         }
     }
@@ -58,7 +67,7 @@ static void game_collision_check(Game* g, float dt) {
     player_vertical_collision_points(&g->player, &points, &points_count, dt);
     for (int i = 0; i < points_count; i++) {
         if (map_check_collision(&g->map, points[i])) {
-            g->player.velocity.y = 0.0f;
+            g->player.entity.velocity.y = 0.0f;
             break;
         }
     }
@@ -93,23 +102,21 @@ static void game_collision_check(Game* g, float dt) {
 }
 
 static void game_update_movement(Game* g, float dt) {
-    player_update_movement(&g->player, dt);
-    for (int i = 0; i < BALLOON_COUNT; i++) {
-        balloon_update_movement(&g->balloon[i], dt);
+    for (int i = 0; i < g->running_entities_count; i++) {
+        entity_update_movement(g->running_entities[i], dt);
     }
 }
 
 static void game_draw(Game* g) {
     map_draw(&g->map);
-    player_draw(&g->player);
-    for (int i = 0; i < BALLOON_COUNT; i++) {
-        balloon_draw(&g->balloon[i]);
+    for (int i = 0; i < g->running_entities_count; i++) {
+        entity_draw(g->running_entities[i]);
     }
 }
 
 int game_loop(Game* g, Input i, float dt) {
-    game_update_input(g, i);
-    game_update_velocity(g, GRAVITY_VELOCITY);
+    player_update_input(&g->player, i);
+    game_update_gravity(g, GRAVITY_VELOCITY);
     game_collision_check(g, dt);
     game_update_movement(g, dt);
     game_draw(g);
@@ -118,6 +125,8 @@ int game_loop(Game* g, Input i, float dt) {
 
 void game_destroy(Game* g) {
     map_destroy(&g->map);
-    player_destroy(&g->player);
-    balloon_destroy(&g->balloon);
+    for (int i = 0; i < g->running_entities_count; i++) {
+        entity_destroy(g->running_entities[i]);
+    }
+    free(g->running_entities);
 }
