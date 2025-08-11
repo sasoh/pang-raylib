@@ -8,6 +8,7 @@ typedef enum {
     Layer_Player  = (1 << 2),
     Layer_Weapon  = (1 << 3)
 } Layer;
+
 typedef struct {
     Vector2 position;
     Vector2 velocity;
