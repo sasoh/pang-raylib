@@ -16,7 +16,7 @@ int main() {
 
     Game g;
     int init_status = game_init(&g);
-    if (init_status == ENODATA) {
+    if (init_status == ENODATA || init_status == ENOMEM) {
         printf("Failed to load game resources, quitting.\n");
         return EXIT_FAILURE;
     }

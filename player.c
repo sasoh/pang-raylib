@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 int player_init(Player* p) {
-    int entity_init_status = entity_init(&p->entity, true, true, PLAYER_TEXTURE_PATH);
+    int entity_init_status = entity_init(&p->entity, Layer_Player, true, true, PLAYER_TEXTURE_PATH);
     if (entity_init_status != 0) {
         return entity_init_status;
     }
@@ -82,4 +82,9 @@ void player_vertical_collision_points(Player* p, Vector2** points, int* points_c
 
 void player_collision_points_destroy(Vector2* points) {
     free(points);
+}
+
+void player_destroy(Player *p) {
+    entity_destroy(&p->entity);
+    weapon_destroy(&p->weapon);
 }

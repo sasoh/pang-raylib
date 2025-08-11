@@ -1,17 +1,22 @@
 #include "entity.h"
 #include <raymath.h>
 #include <errno.h>
+#include <stdio.h>
+#include <string.h>
 
-int entity_init(Entity* e, bool is_gravity_applied, bool is_drawn, char *file_path) {
+int entity_init(Entity* e, Layer layer, bool is_gravity_applied, bool is_drawn, char* file_path) {
     e->position = (Vector2){ .x = 120, .y = 650 };
     e->velocity = Vector2Zero();
 
-    e->texture = LoadTexture(file_path);
-    if (!IsTextureValid(e->texture)) {
-        return EIO;
+    if (file_path != NULL && strlen(file_path) > 0) {
+        e->texture = LoadTexture(file_path);
+        if (!IsTextureValid(e->texture)) {
+            return EIO;
+        }
     }
 
     e->dimensions = (Vector2){ .x = e->texture.width, .y = e->texture.height };
+    e->layer = layer;
     e->is_gravity_applied = is_gravity_applied;
     e->is_drawn = is_drawn;
 
@@ -29,6 +34,10 @@ void entity_update_gravity(Entity* e, float gravity_velocity) {
 
 void entity_draw(Entity* e) {
     if (!e->is_drawn) return;
+    if (!IsTextureValid(e->texture)) {
+        fprintf(stderr, "Trying to draw entity with no texture.\n");
+        return;
+    }
     DrawTexture(e->texture, e->position.x, e->position.y, WHITE);
 }
 

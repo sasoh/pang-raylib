@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 int balloon_init(Balloon* b, Vector2 position, bool intial_direction_right, float max_velocity) {
-    int entity_init_status = entity_init(&b->entity, true, true, BALLOON_TEXTURE_PATH);
+    int entity_init_status = entity_init(&b->entity, Layer_Balloon, true, true, BALLOON_TEXTURE_PATH);
     if (entity_init_status != 0) {
         return entity_init_status;
     }
@@ -66,4 +66,8 @@ void balloon_horizontal_collision(Balloon* b) {
 
 void balloon_vertical_collision(Balloon* b) {
     b->entity.velocity.y = Clamp(-1 * b->entity.velocity.y, -b->max_velocity, b->max_velocity);
+}
+
+void balloon_destroy(Balloon *b) {
+    entity_destroy(&b->entity);
 }

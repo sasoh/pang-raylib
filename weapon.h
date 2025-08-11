@@ -12,3 +12,4 @@ typedef struct {
 
 int weapon_init(Weapon* w);
 void weapon_shoot(Weapon* w, Vector2 position);
+void weapon_destroy(Weapon* w);

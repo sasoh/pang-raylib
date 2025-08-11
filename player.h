@@ -17,3 +17,4 @@ void player_update_input(Player* p, Input i);
 void player_horizontal_collision_points(Player* p, Vector2** points, int* points_count, float dt);
 void player_vertical_collision_points(Player* p, Vector2** points, int* points_count, float dt);
 void player_collision_points_destroy(Vector2* points);
+void player_destroy(Player* p);

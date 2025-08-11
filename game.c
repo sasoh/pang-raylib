@@ -28,17 +28,20 @@ int game_init(Game* g) {
         }
     }
 
-    g->running_entities = malloc((2 + BALLOON_COUNT) * sizeof(Entity *));
+    g->running_entities = malloc((2 + BALLOON_COUNT + g->map.rows * g->map.columns) * sizeof(Entity *));
     if (g->running_entities == NULL) {
         return ENOMEM;
     }
     
     int index = 0;
     (g->running_entities)[index++] = &g->player.entity;
+    (g->running_entities)[index++] = &g->player.weapon.entity;
     for (int i = 0; i < BALLOON_COUNT; i++) {
         (g->running_entities)[index++] = &g->balloon[i].entity;
     }
-    (g->running_entities)[index++] = &g->player.weapon.entity;
+    for (int i = 0; i < g->map.rows * g->map.columns; i++) {
+        (g->running_entities)[index++] = &g->map.entities[i];
+    }
     g->running_entities_count = index;
 
     return 0;
@@ -108,7 +111,6 @@ static void game_update_movement(Game* g, float dt) {
 }
 
 static void game_draw(Game* g) {
-    map_draw(&g->map);
     for (int i = 0; i < g->running_entities_count; i++) {
         entity_draw(g->running_entities[i]);
     }
@@ -124,9 +126,10 @@ int game_loop(Game* g, Input i, float dt) {
 }
 
 void game_destroy(Game* g) {
-    map_destroy(&g->map);
-    for (int i = 0; i < g->running_entities_count; i++) {
-        entity_destroy(g->running_entities[i]);
+    player_destroy(&g->player);
+    for (int i = 0; i < BALLOON_COUNT; i++) {
+        balloon_destroy(&g->balloon[i]);
     }
+    map_destroy(&g->map);
     free(g->running_entities);
 }

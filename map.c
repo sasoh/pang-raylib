@@ -17,51 +17,22 @@ static void map_create(Map* m, int rows, int columns) {
     m->rows = rows;
     m->columns = columns;
     m->tiles = malloc(rows * columns * sizeof(int));
-}
-
-static Texture2D map_texture(Map* m, int index) {
-    Texture2D result = { 0 };
-
-    if (index == 2) {
-        result = m->textures[0];
-    }
-    else if (index == 3) {
-        result = m->textures[1];
-    }
-
-    return result;
+    m->entities = malloc(rows * columns * sizeof(Entity));
 }
 
 static int map_index(int x, int y, int columns) {
     return x + y * columns;
 }
 
-void map_draw(Map* m) {
-    for (int y = 0; y < m->rows; y++) {
-        for (int x = 0; x < m->columns; x++) {
-            int current_tile = m->tiles[map_index(x, y, m->columns)];
-            Texture2D tile_texture = map_texture(m, current_tile);
-            if (IsTextureValid(tile_texture)) {
-                DrawTexture(
-                    tile_texture,
-                    x * tile_texture.width,
-                    y * tile_texture.height,
-                    WHITE
-                );
-            }
-        }
-    }
-}
-
 void map_destroy(Map* m) {
     if (m->tiles != NULL) {
         free(m->tiles);
     }
-    if (IsTextureValid(m->textures[0])) {
-        UnloadTexture(m->textures[0]);
-    }
-    if (IsTextureValid(m->textures[1])) {
-        UnloadTexture(m->textures[1]);
+    if (m->entities != NULL) {
+        for (int i = 0; i < m->rows * m->columns; i++) {
+            entity_destroy(&m->entities[i]);
+        }
+        free(m->entities);
     }
 }
 
@@ -103,18 +74,33 @@ int map_init(Map* m) {
             for (int j = 0; j < strlen(line_buffer); j++) {
                 char c = line_buffer[j];
                 if (isdigit(c)) {
-                    m->tiles[map_index(x, y, m->columns)] = c - '0';
+                    // create entity here
+                    int c_uint = c - '0';
+
+                    char* tile_texture_path = NULL;
+                    if (c_uint == 2) {
+                        tile_texture_path = TILE01_PATH;
+                    }
+                    else if (c_uint == 3) {
+                        tile_texture_path = TILE02_PATH;
+                    }
+                    Entity *e = &m->entities[map_index(x, y, m->columns)];
+                    entity_init(
+                        e,
+                        Layer_Level,
+                        false,
+                        tile_texture_path != NULL,
+                        tile_texture_path
+                    );
+                    e->position = (Vector2){ .x = x * e->dimensions.x, .y = y * e->dimensions.y };
+                    m->tile_size = e->dimensions.x;
+                    m->tiles[map_index(x, y, m->columns)] = c_uint;
                     x++;
                 }
             }
         }
         fclose(map_csv);
-
-        m->textures[0] = LoadTexture(TILE01_PATH);
-        m->textures[1] = LoadTexture(TILE02_PATH);
-
-        m->tile_size = m->textures[0].width;
-
+        
         map_print(m);
     }
     else {
