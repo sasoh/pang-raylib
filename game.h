@@ -4,7 +4,7 @@
 #include "map.h"
 #include "player.h"
 
-#define GRAVITY_VELOCITY 30
+#define GRAVITY_VELOCITY 1000
 #define BALLOON_COUNT 3
 
 typedef struct {

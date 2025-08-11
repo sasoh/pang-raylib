@@ -21,7 +21,7 @@ int game_init(Game* g) {
             &g->balloon[i],
             (Vector2){ .x = 220.0f + i * 200, .y = 150.0f },
             i % 2 == 0,
-            GRAVITY_VELOCITY * 50
+            12 * g->map.tile_size
         );
         if (balloon_load_status == EIO) {
             return ENODATA;
@@ -118,7 +118,7 @@ static void game_draw(Game* g) {
 
 int game_loop(Game* g, Input i, float dt) {
     player_update_input(&g->player, i);
-    game_update_gravity(g, GRAVITY_VELOCITY);
+    game_update_gravity(g, GRAVITY_VELOCITY * dt);
     game_collision_check(g, dt);
     game_update_movement(g, dt);
     game_draw(g);
