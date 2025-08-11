@@ -14,8 +14,8 @@ typedef struct {
     Vector2 velocity;
     Texture2D texture;
     Vector2 dimensions;
-    int layer;
     bool is_gravity_applied;
+    Layer layer;
     bool is_drawn;
 } Entity;
 
