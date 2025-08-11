@@ -3,7 +3,7 @@ project(WindowTest)
 find_package(raylib REQUIRED)
 add_executable(${PROJECT_NAME} main.c)
 target_link_libraries(${PROJECT_NAME} raylib)
-target_sources(${PROJECT_NAME} PRIVATE map.c)
+target_sources(${PROJECT_NAME} PRIVATE game.c map.c entity.c player.c balloon.c input.c weapon.c)
 
 if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework IOKit")

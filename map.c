@@ -103,7 +103,7 @@ int map_init(Map* m) {
             for (int j = 0; j < strlen(line_buffer); j++) {
                 char c = line_buffer[j];
                 if (isdigit(c)) {
-                    m->tiles[map_index(x, y, m->columns)] = atoi(&c);
+                    m->tiles[map_index(x, y, m->columns)] = c - '0';
                     x++;
                 }
             }

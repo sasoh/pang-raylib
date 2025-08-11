@@ -1,4 +1,3 @@
-#pragma once
 #include "balloon.h"
 #include <errno.h>
 #include <raylib.h>
