@@ -122,3 +122,10 @@ bool map_check_collision(Map* m, Vector2 position) {
 
     return tile != TILE_BLANK;
 }
+
+bool map_check_within_boundaries(Map* m, Vector2 position)
+{
+    int map_width = m->columns * m->tile_size;
+    int map_height = m->rows* m->tile_size;
+    return position.x > 0 && position.x < map_width && position.y > 0 && position.y < map_height;
+}

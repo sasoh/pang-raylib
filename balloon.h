@@ -16,4 +16,5 @@ void balloon_vertical_collision_points(Balloon* b, Vector2** points, int* points
 void balloon_collision_points_destroy(Vector2* points);
 void balloon_horizontal_collision(Balloon* b);
 void balloon_vertical_collision(Balloon* b);
+bool ballon_has_projectile_collision(Balloon* b, Vector2 projectile_position);
 void balloon_destroy(Balloon* b);

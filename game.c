@@ -74,12 +74,21 @@ static void game_collision_check(Game* g, float dt) {
             break;
         }
     }
-    balloon_collision_points_destroy(points);
+    player_collision_points_destroy(points);
     points = NULL;
     points_count = 0;
 
+    Vector2 projectile_point = weapon_collision_point(&g->player.weapon, dt);
+
     for (int i = 0; i < BALLOON_COUNT; i++) {
         Balloon* b = &g->balloon[i];
+
+        if (&g->player.weapon.is_shot) {
+            if (ballon_has_projectile_collision(b, projectile_point)) {
+                weapon_stop(&g->player.weapon);
+            }
+        }
+
         balloon_horizontal_collision_points(b, &points, &points_count, dt);
         for (int i = 0; i < points_count; i++) {
             if (map_check_collision(&g->map, points[i])) {
@@ -101,6 +110,16 @@ static void game_collision_check(Game* g, float dt) {
         player_collision_points_destroy(points);
         points = NULL;
         points_count = 0;
+    }
+
+    if (&g->player.weapon.is_shot) {
+        if (!map_check_within_boundaries(&g->map, projectile_point)) {
+            weapon_stop(&g->player.weapon);
+        }
+
+        if (map_check_collision(&g->map, projectile_point)) {
+            weapon_stop(&g->player.weapon);
+        }
     }
 }
 

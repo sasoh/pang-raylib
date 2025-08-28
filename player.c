@@ -31,15 +31,13 @@ void player_update_input(Player* p, Input i) {
     p->entity.velocity = targetVelocity;
 
     if (i.is_shoot_pressed) {
-        if (!p->weapon.is_shot) {
-            weapon_shoot(
-                &p->weapon,
-                (Vector2){
-                    .x = p->entity.position.x + p->entity.dimensions.x / 2,
-                    .y = p->entity.position.y
-                }
-            );
-        }
+        weapon_shoot(
+            &p->weapon,
+            (Vector2){
+                .x = p->entity.position.x + p->entity.dimensions.x / 2,
+                .y = p->entity.position.y
+            }
+        );
     }
 }
 

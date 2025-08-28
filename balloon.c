@@ -68,6 +68,17 @@ void balloon_vertical_collision(Balloon* b) {
     b->entity.velocity.y = Clamp(-1 * b->entity.velocity.y, -b->max_velocity, b->max_velocity);
 }
 
+bool ballon_has_projectile_collision(Balloon* b, Vector2 projectile_position)
+{
+    float balloon_radius = b->entity.dimensions.x / 2;
+    Vector2 center = {
+        .x = b->entity.position.x + balloon_radius,
+        .y = b->entity.position.y + balloon_radius,
+    };
+    float distance = Vector2Distance(center, projectile_position);
+    return distance <= balloon_radius;
+}
+
 void balloon_destroy(Balloon *b) {
     entity_destroy(&b->entity);
 }

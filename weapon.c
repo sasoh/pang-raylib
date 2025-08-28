@@ -14,9 +14,21 @@ int weapon_init(Weapon* w) {
 }
 
 void weapon_shoot(Weapon* w, Vector2 position) {
+    if (w->is_shot) return;
     w->entity.position = position;
     w->entity.is_drawn = true;
     w->is_shot = true;
+}
+
+Vector2 weapon_collision_point(Weapon* w, float dt)
+{
+    return w->entity.position;
+}
+
+void weapon_stop(Weapon* w)
+{
+    w->is_shot = false;
+    w->entity.is_drawn = false;
 }
 
 void weapon_destroy(Weapon *w) {
