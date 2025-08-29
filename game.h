@@ -1,5 +1,6 @@
 #pragma once
 #include "balloon.h"
+#include "entity_list.h"
 #include "input.h"
 #include "map.h"
 #include "player.h"
@@ -11,8 +12,7 @@ typedef struct {
     Map map;
     Player player;
     Balloon balloon[BALLOON_COUNT];
-    Entity **running_entities;
-    int running_entities_count;
+    Entity_list entities;
 } Game;
 
 int game_init(Game* g);

@@ -27,29 +27,25 @@ int game_init(Game* g) {
             return ENODATA;
         }
     }
-
-    g->running_entities = malloc((2 + BALLOON_COUNT + g->map.rows * g->map.columns) * sizeof(Entity *));
-    if (g->running_entities == NULL) {
-        return ENOMEM;
-    }
     
-    int index = 0;
-    (g->running_entities)[index++] = &g->player.entity;
-    (g->running_entities)[index++] = &g->player.weapon.entity;
+    g->entities.head = NULL;
+    entity_list_append(&g->entities, &g->player.entity);
+    entity_list_append(&g->entities, &g->player.weapon.entity);
     for (int i = 0; i < BALLOON_COUNT; i++) {
-        (g->running_entities)[index++] = &g->balloon[i].entity;
+        entity_list_append(&g->entities, &g->balloon[i].entity);
     }
     for (int i = 0; i < g->map.rows * g->map.columns; i++) {
-        (g->running_entities)[index++] = &g->map.entities[i];
+        entity_list_append(&g->entities, &g->map.entities[i]);
     }
-    g->running_entities_count = index;
 
     return 0;
 }
 
 static void game_update_gravity(Game* g, float gravity_velocity) {   
-    for (int i = 0; i < g->running_entities_count; i++) {
-        entity_update_gravity(g->running_entities[i], gravity_velocity);
+    Entity_list_node* current = g->entities.head;
+    while (current != NULL) {
+        entity_update_gravity(current->entity, gravity_velocity);
+        current = current->next;
     }
 }
 
@@ -85,6 +81,7 @@ static void game_collision_check(Game* g, float dt) {
 
         if (&g->player.weapon.is_shot) {
             if (ballon_has_projectile_collision(b, projectile_point)) {
+                balloon_pop(b);
                 weapon_stop(&g->player.weapon);
             }
         }
@@ -124,14 +121,18 @@ static void game_collision_check(Game* g, float dt) {
 }
 
 static void game_update_movement(Game* g, float dt) {
-    for (int i = 0; i < g->running_entities_count; i++) {
-        entity_update_movement(g->running_entities[i], dt);
+    Entity_list_node* current = g->entities.head;
+    while (current != NULL) {
+        entity_update_movement(current->entity, dt);
+        current = current->next;
     }
 }
 
 static void game_draw(Game* g) {
-    for (int i = 0; i < g->running_entities_count; i++) {
-        entity_draw(g->running_entities[i]);
+    Entity_list_node* current = g->entities.head;
+    while (current != NULL) {
+        entity_draw(current->entity);
+        current = current->next;
     }
 }
 
@@ -150,5 +151,5 @@ void game_destroy(Game* g) {
         balloon_destroy(&g->balloon[i]);
     }
     map_destroy(&g->map);
-    free(g->running_entities);
+    entity_list_destroy(&g->entities);
 }

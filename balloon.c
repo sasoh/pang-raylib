@@ -15,10 +15,14 @@ int balloon_init(Balloon* b, Vector2 position, bool intial_direction_right, floa
     b->entity.velocity = (Vector2){ .x = direction_multiplier * BALLOON_HORIZOTNAL_SPEED, .y = 0.0f };
     b->max_velocity = max_velocity;
 
+    b->is_alive = true;
+
     return 0;
 }
 
 void balloon_horizontal_collision_points(Balloon* b, Vector2** points, int* points_count, float dt) {
+    if (b->is_alive == false) return;
+
     // two points - middle left and middle right
     *points = (Vector2*)malloc(2 * sizeof(Vector2));
     if (*points == NULL) {
@@ -38,6 +42,8 @@ void balloon_horizontal_collision_points(Balloon* b, Vector2** points, int* poin
 }
 
 void balloon_vertical_collision_points(Balloon* b, Vector2** points, int* points_count, float dt) {
+    if (b->is_alive == false) return;
+
     // two points - top center and bottom center
     *points = (Vector2*)malloc(2 * sizeof(Vector2));
     if (*points == NULL) {
@@ -70,6 +76,7 @@ void balloon_vertical_collision(Balloon* b) {
 
 bool ballon_has_projectile_collision(Balloon* b, Vector2 projectile_position)
 {
+    if (b->is_alive == false) return false;
     float balloon_radius = b->entity.dimensions.x / 2;
     Vector2 center = {
         .x = b->entity.position.x + balloon_radius,
@@ -77,6 +84,12 @@ bool ballon_has_projectile_collision(Balloon* b, Vector2 projectile_position)
     };
     float distance = Vector2Distance(center, projectile_position);
     return distance <= balloon_radius;
+}
+
+void balloon_pop(Balloon* b)
+{
+    b->is_alive = false;
+    b->entity.is_drawn = false;
 }
 
 void balloon_destroy(Balloon *b) {
