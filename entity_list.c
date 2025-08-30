@@ -1,30 +1,25 @@
 #include "entity_list.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void entity_list_append(Entity_list* list, Entity* e)
 {
+    Entity_list_node* next = malloc(sizeof(Entity_list_node));
+    if (next == NULL) {
+        printf("Allocating memory for entity list element failed!\n");
+        return;
+    }
+    next->entity = e;
+    next->next = NULL;
+
     if (list->head == NULL) {
-        list->head = malloc(sizeof(Entity_list_node));
-        if (list->head == NULL) {
-            printf("Allocating memory for entity list failed!\n");
-            return;
-        }
-        list->head->entity = e;
-        list->head->next = NULL;
+        list->head = next;
     }
     else {
         Entity_list_node* current = list->head;
         while (current->next != NULL) {
             current = current->next;
         }
-
-        Entity_list_node* next = malloc(sizeof(Entity_list_node));
-        if (next == NULL) {
-            printf("Allocating memory for entity list failed!\n");
-            return;
-        }
-        next->entity = e;
-        next->next = NULL;
         current->next = next;
     }
 }
