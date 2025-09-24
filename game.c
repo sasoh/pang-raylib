@@ -85,6 +85,7 @@ static void game_collision_check(Game* g, float dt) {
     
     Balloon_list_node* b = g->balloons.head;
     do {
+        if (b == NULL) continue;
         Balloon* balloon = b->balloon;
         if (g->player.weapon.is_shot) {
             if (ballon_has_projectile_collision(balloon, projectile_point)) {
