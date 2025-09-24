@@ -1,10 +1,11 @@
 #pragma once
 #include "entity.h"
 
-typedef struct {
+typedef struct Entity_list_node Entity_list_node;
+struct Entity_list_node {
     Entity* entity;
-    struct Entity_list_node* next;
-} Entity_list_node;
+    Entity_list_node* next;
+};
 
 typedef struct {
     Entity_list_node* head;

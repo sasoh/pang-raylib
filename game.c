@@ -79,7 +79,7 @@ static void game_collision_check(Game* g, float dt) {
     for (int i = 0; i < BALLOON_COUNT; i++) {
         Balloon* b = &g->balloon[i];
 
-        if (&g->player.weapon.is_shot) {
+        if (g->player.weapon.is_shot) {
             if (ballon_has_projectile_collision(b, projectile_point)) {
                 balloon_pop(b);
                 weapon_stop(&g->player.weapon);
@@ -109,7 +109,7 @@ static void game_collision_check(Game* g, float dt) {
         points_count = 0;
     }
 
-    if (&g->player.weapon.is_shot) {
+    if (g->player.weapon.is_shot) {
         if (!map_check_within_boundaries(&g->map, projectile_point)) {
             weapon_stop(&g->player.weapon);
         }

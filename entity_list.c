@@ -48,9 +48,9 @@ void entity_list_print(Entity_list* head)
 
 void entity_list_destroy(Entity_list* list)
 {
-    Entity_list_node *current = list->head;
+    Entity_list_node* current = list->head;
     while (current != NULL) {
-        Entity_list_node *next = current->next;
+        Entity_list_node* next = current->next;
         free(current);
         current = next;
     }
