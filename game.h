@@ -12,7 +12,6 @@
 typedef struct {
     Map map;
     Player player;
-    Balloon balloon[BALLOON_COUNT];
     Entity_list entities;
     Balloon_list balloons;
 } Game;

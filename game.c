@@ -16,9 +16,11 @@ int game_init(Game* g) {
         return ENODATA;
     }
 
+    g->balloons.head = NULL;
     for (int i = 0; i < BALLOON_COUNT; i++) {
+        Balloon *balloon = malloc(sizeof(Balloon));
         int balloon_load_status = balloon_init(
-            &g->balloon[i],
+            balloon,
             (Vector2){ .x = 220.0f + i * 200, .y = 150.0f },
             i % 2 == 0,
             12 * g->map.tile_size
@@ -26,16 +28,21 @@ int game_init(Game* g) {
         if (balloon_load_status == EIO) {
             return ENODATA;
         }
+
+        balloon_list_append(&g->balloons, balloon);
     }
     
     g->entities.head = NULL;
     entity_list_append(&g->entities, &g->player.entity);
     entity_list_append(&g->entities, &g->player.weapon.entity);
-    for (int i = 0; i < BALLOON_COUNT; i++) {
-        entity_list_append(&g->entities, &g->balloon[i].entity);
-    }
     for (int i = 0; i < g->map.rows * g->map.columns; i++) {
         entity_list_append(&g->entities, &g->map.entities[i]);
+    }
+
+    Balloon_list_node* balloon = g->balloons.head;
+    entity_list_append(&g->entities, &balloon->balloon->entity);
+    while ((balloon = balloon->next) != NULL) {
+        entity_list_append(&g->entities, &balloon->balloon->entity);
     }
 
     return 0;
@@ -75,21 +82,21 @@ static void game_collision_check(Game* g, float dt) {
     points_count = 0;
 
     Vector2 projectile_point = weapon_collision_point(&g->player.weapon, dt);
-
-    for (int i = 0; i < BALLOON_COUNT; i++) {
-        Balloon* b = &g->balloon[i];
-
+    
+    Balloon_list_node* b = g->balloons.head;
+    do {
+        Balloon* balloon = b->balloon;
         if (g->player.weapon.is_shot) {
-            if (ballon_has_projectile_collision(b, projectile_point)) {
-                balloon_pop(b);
+            if (ballon_has_projectile_collision(balloon, projectile_point)) {
+                balloon_pop(balloon);
                 weapon_stop(&g->player.weapon);
             }
         }
 
-        balloon_horizontal_collision_points(b, &points, &points_count, dt);
+        balloon_horizontal_collision_points(balloon, &points, &points_count, dt);
         for (int i = 0; i < points_count; i++) {
             if (map_check_collision(&g->map, points[i])) {
-                balloon_horizontal_collision(b);
+                balloon_horizontal_collision(balloon);
                 break;
             }
         }
@@ -97,17 +104,17 @@ static void game_collision_check(Game* g, float dt) {
         points = NULL;
         points_count = 0;
 
-        balloon_vertical_collision_points(b, &points, &points_count, dt);
+        balloon_vertical_collision_points(balloon, &points, &points_count, dt);
         for (int i = 0; i < points_count; i++) {
             if (map_check_collision(&g->map, points[i])) {
-                balloon_vertical_collision(b);
+                balloon_vertical_collision(balloon);
                 break;
             }
         }
         player_collision_points_destroy(points);
         points = NULL;
         points_count = 0;
-    }
+    } while ((b = b->next) != NULL);
 
     if (g->player.weapon.is_shot) {
         if (!map_check_within_boundaries(&g->map, projectile_point)) {
@@ -147,9 +154,7 @@ int game_loop(Game* g, Input i, float dt) {
 
 void game_destroy(Game* g) {
     player_destroy(&g->player);
-    for (int i = 0; i < BALLOON_COUNT; i++) {
-        balloon_destroy(&g->balloon[i]);
-    }
     map_destroy(&g->map);
     entity_list_destroy(&g->entities);
+    balloon_list_destroy(&g->balloons);
 }
